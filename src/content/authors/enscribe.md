@@ -1,10 +1,10 @@
 ---
-name: 'enscribe'
+name: 'kkghrsbsb'
 pronouns: 'he/him'
-avatar: 'https://gravatar.com/avatar/9bfdc4ec972793cf05cb91efce5f4aaaec2a0da1bf4ec34dad0913f1d845faf6.webp?size=256'
-bio: 'd(-_-)b'
-website: 'https://enscribe.dev'
-twitter: 'https://twitter.com/enscry'
-github: 'https://github.com/jktrn'
-mail: 'jason@enscribe.dev'
+avatar: 'https://gravatar.com/avatar/0c650496cd98cb447c288d6d7f5da66b6a77b8d1ba3e0bd4b9b91d8012112b09.webp?size=256'
+bio: '那是孤独的雪，是死掉的雨，是雨的精魂'
+website: 'https://kkghrsbsb.com'
+twitter: 'https://twitter.com/kkghrsbsb'
+github: 'https://github.com/kkghrsbsb'
+mail: '395508188@qq.com'
 ---
