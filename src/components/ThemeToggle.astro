@@ -31,13 +31,13 @@ import { Icon } from 'astro-icon/components'
 </script>
 
 <script>
-  function applyTheme(newTheme) {
+  function applyTheme(newTheme: any) {
     const element = document.documentElement
     element.setAttribute('data-theme', newTheme)
     localStorage.setItem('theme', newTheme)
   }
 
-  function getToggleOrigin(event) {
+  function getToggleOrigin(event: any) {
     const target = event?.currentTarget
     const rect = target?.getBoundingClientRect?.()
     const fallbackX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2
@@ -53,7 +53,7 @@ import { Icon } from 'astro-icon/components'
     return { x: fallbackX, y: fallbackY }
   }
 
-  function handleToggleClick(event) {
+  function handleToggleClick(event: any) {
     const element = document.documentElement
     const currentTheme = element.getAttribute('data-theme')
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
