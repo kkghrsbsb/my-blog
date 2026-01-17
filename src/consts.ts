@@ -2,9 +2,8 @@ import type { IconMap, SocialLink, Site } from '@/types'
 
 // todo: metadata
 export const SITE: Site = {
-  title: 'kkghrsbsb\'s note',
-  description:
-    '一个以理性与系统思考为核心的技术笔记站，记录学习、实践与反思。',
+  title: "kkghrsbsb's note",
+  description: '一个以理性与系统思考为核心的技术笔记站，记录学习、实践与反思。',
   href: 'https://kkghrsbsb.com',
   author: 'kkghrsbsb',
   locale: 'zh-CN',
@@ -13,17 +12,21 @@ export const SITE: Site = {
 }
 
 export const NAV_LINKS: SocialLink[] = [
-  {
-    href: '/blog',
-    label: 'blog',
+    {
+    href: '/',
+    label: 'home',
   },
   {
-    href: '/authors',
-    label: 'authors',
+    href: '/blog',
+    label: 'Blog',
+  },
+  {
+    href: '/tags',
+    label: 'Tags',
   },
   {
     href: '/about',
-    label: 'about',
+    label: 'About',
   },
 ]
 

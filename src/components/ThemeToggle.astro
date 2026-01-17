@@ -16,7 +16,7 @@ import { Icon } from 'astro-icon/components'
 </Button>
 
 <script is:inline data-astro-rerun>
-  (() => {
+  ;(() => {
     const theme = (() => {
       const stored = localStorage?.getItem('theme') ?? ''
       if (['dark', 'light'].includes(stored)) return stored
@@ -31,20 +31,67 @@ import { Icon } from 'astro-icon/components'
 </script>
 
 <script>
-  function handleToggleClick() {
+  function applyTheme(newTheme) {
+    const element = document.documentElement
+    element.setAttribute('data-theme', newTheme)
+    localStorage.setItem('theme', newTheme)
+  }
+
+  function getToggleOrigin(event) {
+    const target = event?.currentTarget
+    const rect = target?.getBoundingClientRect?.()
+    const fallbackX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2
+    const fallbackY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2
+
+    if ('clientX' in event && 'clientY' in event) {
+      const hasPointer = event.clientX !== 0 || event.clientY !== 0
+      if (hasPointer) {
+        return { x: event.clientX, y: event.clientY }
+      }
+    }
+
+    return { x: fallbackX, y: fallbackY }
+  }
+
+  function handleToggleClick(event) {
     const element = document.documentElement
     const currentTheme = element.getAttribute('data-theme')
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
+    const supportsViewTransition =
+      typeof document.startViewTransition === 'function'
 
-    element.classList.add('[&_*]:transition-none')
-    element.setAttribute('data-theme', newTheme)
-    window.getComputedStyle(element).getPropertyValue('opacity')
+    if (!supportsViewTransition || prefersReducedMotion) {
+      element.classList.add('[&_*]:transition-none')
+      applyTheme(newTheme)
+      window.getComputedStyle(element).getPropertyValue('opacity')
 
-    requestAnimationFrame(() => {
-      element.classList.remove('[&_*]:transition-none')
+      requestAnimationFrame(() => {
+        element.classList.remove('[&_*]:transition-none')
+      })
+
+      return
+    }
+
+    const { x, y } = getToggleOrigin(event)
+    const maxX = Math.max(x, window.innerWidth - x)
+    const maxY = Math.max(y, window.innerHeight - y)
+    const radius = Math.hypot(maxX, maxY)
+
+    element.style.setProperty('--theme-toggle-x', `${x}px`)
+    element.style.setProperty('--theme-toggle-y', `${y}px`)
+    element.style.setProperty('--theme-toggle-radius', `${radius}px`)
+    element.setAttribute('data-theme-transition', 'circle')
+
+    const transition = document.startViewTransition(() => {
+      applyTheme(newTheme)
     })
 
-    localStorage.setItem('theme', newTheme)
+    transition.finished.finally(() => {
+      element.removeAttribute('data-theme-transition')
+    })
   }
 
   function initThemeToggle() {

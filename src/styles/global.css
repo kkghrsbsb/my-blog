@@ -66,6 +66,38 @@
   --ring: oklch(0.556 0 0);
 }
 
+:root[data-theme-transition='circle']::view-transition-old(root),
+:root[data-theme-transition='circle']::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-theme-transition='circle']::view-transition-new(root) {
+  animation: theme-toggle-reveal 780ms cubic-bezier(0.2, 0, 0.2, 1) both;
+}
+
+:root[data-theme-transition='circle']::view-transition-old(root) {
+  opacity: 1;
+}
+
+@keyframes theme-toggle-reveal {
+  from {
+    clip-path: circle(0px at var(--theme-toggle-x) var(--theme-toggle-y));
+  }
+  to {
+    clip-path: circle(
+      var(--theme-toggle-radius) at var(--theme-toggle-x) var(--theme-toggle-y)
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme-transition='circle']::view-transition-old(root),
+  :root[data-theme-transition='circle']::view-transition-new(root) {
+    animation: none;
+  }
+}
+
 @layer base {
   *,
   ::after,
