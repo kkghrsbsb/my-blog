@@ -1,0 +1,60 @@
+name: Deploy to Server (rsync dist)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Setup SSH
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SERVER_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Rsync dist to server staging dir
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az --delete \
+            -e "ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes" \
+            dist/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/home__new/
+
+      - name: Switch live dir and reload caddy
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "/usr/local/bin/deploy_my_blog_switch.sh"
+
+      - name: Smoke check (optional)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p ${{ secrets.SERVER_PORT }} -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "test -f /var/www/home/index.html && echo OK"
