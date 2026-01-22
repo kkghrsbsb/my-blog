@@ -6,31 +6,32 @@ import { buttonVariants } from '@/components/ui/button'
 import { SITE } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
 import { getRecentPosts } from '@/lib/data-utils'
+import './index.css'
 
 const blog = await getRecentPosts(SITE.featuredPostCount)
 ---
 
 <Layout class="max-w-3xl">
   <PageHead slot="head" title="Home" />
-  <section class="rounded-lg border">
-    <div class="flex flex-col space-y-1.5 p-6">
-      <h3 class="text-3xl leading-none font-medium">Xinger Yao</h3>
-      <p class="text-muted-foreground text-sm-m2">
-        kkghrsbsb
-      </p>
+  <section class="intro-grid">
+    <div class="intro-left">
+      <h3 class="intro-name">Xinger Yao</h3>
+      <p class="intro-id">kkghrsbsb</p>
+      <p class="intro-quote">那是孤独的雪，是死掉的雨，是雨的精魂</p>
     </div>
-    <div class="p-6 pt-0">
-      <p class="text-muted-foreground mb text-sm-m2">
-          那是孤独的雪，是死掉的雨，是雨的精魂
-      </p>
-    <img
-      src="/page_media/taihu_miyuewan_16_9.jpg"
-      alt="In October 2025, I was at Mingyue Bay on Taihu Lake."
-    />
-      <p class="text-muted-foreground text-sm">
-          Taihu Lake  
-      </p>
-    </div>
+
+    <figure class="frame">
+      <div class="frame-paper">
+        <img
+          class="frame-img"
+          src="/page_media/taihu_miyuewan_16_9.jpg"
+          alt="In October 2025, I was at Mingyue Bay on Taihu Lake."
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="frame-cap">Taihu Lake</figcaption>
+      </div>
+    </figure>
   </section>
   <section class="flex flex-col gap-y-4">
     <h2 class="text-2xl font-medium">Latest posts</h2>

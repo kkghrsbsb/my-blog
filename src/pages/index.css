@@ -1,0 +1,174 @@
+.intro-grid {
+  position: relative;
+  padding: 2.5rem 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+  overflow: hidden;
+}
+
+.intro-grid::before {
+  content: '';
+  position: absolute;
+  inset: -45%;
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, currentColor 28%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, currentColor 28%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 28px 28px;
+  animation: gridFloat 13s linear infinite;
+  pointer-events: none;
+  opacity: 0.22;
+  transform: translate3d(0, 0, 0);
+  -webkit-mask-image: radial-gradient(
+    120% 95% at 50% 45%,
+    transparent 55%,
+    #000 72%,
+    #000 78%,
+    transparent 92%
+  );
+  mask-image: radial-gradient(
+    120% 95% at 50% 45%,
+    transparent 55%,
+    #000 72%,
+    #000 78%,
+    transparent 92%
+  );
+}
+
+.intro-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    75% 60% at 50% 45%,
+    color-mix(in oklab, var(--background) 82%, transparent),
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+@keyframes gridFloat {
+  from {
+    transform: translate3d(-60px, -34px, 0);
+  }
+  to {
+    transform: translate3d(60px, 34px, 0);
+  }
+}
+
+@media (min-width: 860px) {
+  .intro-grid {
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+  }
+}
+
+.intro-left {
+  position: relative;
+  z-index: 1;
+}
+
+.intro-name {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 500;
+  line-height: 1.05;
+  color: var(--foreground);
+  letter-spacing: -0.01em;
+}
+
+.intro-id {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.intro-quote {
+  margin-top: 1.25rem;
+  font-size: 0.95rem;
+  color: var(--muted-foreground);
+  max-width: 34ch;
+}
+
+.frame {
+  margin: 0;
+  justify-self: start;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 860px) {
+  .frame {
+    justify-self: end;
+  }
+}
+
+.frame-paper {
+  position: relative;
+  width: min(460px, 100%);
+  padding: 16px 16px 52px;
+  background: color-mix(in oklab, var(--background) 97%, var(--foreground) 3%);
+  border-radius: 0;
+  box-shadow:
+    -8px 12px 30px color-mix(in oklab, var(--foreground) 9%, transparent),
+    5px 8px 18px color-mix(in oklab, var(--foreground) 5%, transparent),
+    0 2px 5px color-mix(in oklab, var(--foreground) 4%, transparent);
+  transition:
+    box-shadow 0.24s ease,
+    filter 0.24s ease;
+}
+
+.frame-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--foreground) 4%, transparent),
+    transparent 45%
+  );
+  opacity: 0.22;
+}
+
+.frame-paper:hover {
+  box-shadow:
+    -10px 14px 36px color-mix(in oklab, var(--foreground) 11%, transparent),
+    6px 10px 22px color-mix(in oklab, var(--foreground) 7%, transparent),
+    0 3px 6px color-mix(in oklab, var(--foreground) 5%, transparent);
+  filter: brightness(1.01);
+}
+
+.frame-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: color-mix(in oklab, var(--background) 85%, var(--foreground) 15%);
+}
+
+.frame-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  font-style: italic;
+  letter-spacing: 0.03em;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .intro-grid::before{ animation:none; }
+  .frame-paper{ transition:none; }
+}
