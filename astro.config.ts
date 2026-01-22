@@ -21,11 +21,7 @@ import tailwindcss from '@tailwindcss/vite'
 const TARGET = process.env.DEPLOY_TARGET || 'pages' // pages | prod
 
 export default defineConfig({
-  site:
-    TARGET === 'prod'
-      ? 'https://kkghrsbsbsb.com'
-      : 'https://kkghrsbsb.github.io',
-  base: TARGET === 'prod' ? '/' : '/my-blog',
+  site: TARGET === "prod" ? "https://kkghrsbsbsb.com" : "https://kkghrsbsb.github.io",
   integrations: [
     expressiveCode({
       themes: ['github-light', 'github-dark'],
