@@ -20,8 +20,8 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Build (prod)
+        run: DEPLOY_TARGET=prod npm run build
 
       - name: Setup SSH
         shell: bash

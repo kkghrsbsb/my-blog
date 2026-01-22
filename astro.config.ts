@@ -18,8 +18,14 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 
 import tailwindcss from '@tailwindcss/vite'
 
+const TARGET = process.env.DEPLOY_TARGET || 'pages' // pages | prod
+
 export default defineConfig({
-  site: 'https://kkghrsbsb.com',
+  site:
+    TARGET === 'prod'
+      ? 'https://kkghrsbsbsb.com'
+      : 'https://kkghrsbsb.github.io',
+  base: TARGET === 'prod' ? '/' : '/my-blog',
   integrations: [
     expressiveCode({
       themes: ['github-light', 'github-dark'],
@@ -40,8 +46,7 @@ export default defineConfig({
         codeFontSize: '0.75rem',
         borderColor: 'var(--border)',
         codeFontFamily: 'var(--font-mono)',
-        codeBackground:
-          'color-mix(in oklab, var(--muted) 25%, transparent)',
+        codeBackground: 'color-mix(in oklab, var(--muted) 25%, transparent)',
         frames: {
           editorActiveTabForeground: 'var(--muted-foreground)',
           editorActiveTabBackground:
