@@ -118,13 +118,7 @@
   padding: 16px 16px 52px;
   background: color-mix(in oklab, var(--background) 97%, var(--foreground) 3%);
   border-radius: 0;
-  box-shadow:
-    -8px 12px 30px color-mix(in oklab, var(--foreground) 9%, transparent),
-    5px 8px 18px color-mix(in oklab, var(--foreground) 5%, transparent),
-    0 2px 5px color-mix(in oklab, var(--foreground) 4%, transparent);
-  transition:
-    box-shadow 0.24s ease,
-    filter 0.24s ease;
+  box-shadow: none;
 }
 
 .frame-paper::before {
@@ -141,11 +135,7 @@
 }
 
 .frame-paper:hover {
-  box-shadow:
-    -10px 14px 36px color-mix(in oklab, var(--foreground) 11%, transparent),
-    6px 10px 22px color-mix(in oklab, var(--foreground) 7%, transparent),
-    0 3px 6px color-mix(in oklab, var(--foreground) 5%, transparent);
-  filter: brightness(1.01);
+  filter: none;
 }
 
 .frame-img {
@@ -168,7 +158,29 @@
   user-select: none;
 }
 
-@media (prefers-reduced-motion: reduce){
-  .intro-grid::before{ animation:none; }
-  .frame-paper{ transition:none; }
+@media (prefers-reduced-motion: reduce) {
+  .intro-grid::before {
+    animation: none;
+  }
+}
+
+.music-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.music-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  letter-spacing: 0.01em;
+}
+
+.music-subtitle {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+  opacity: 0.8;
 }

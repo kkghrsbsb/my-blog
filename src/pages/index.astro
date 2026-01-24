@@ -1,4 +1,5 @@
 ---
+import APlayer from '@/components/APlayer.astro'
 import BlogCard from '@/components/BlogCard.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
@@ -13,6 +14,9 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
 
 <Layout class="max-w-3xl">
   <PageHead slot="head" title="Home" />
+  <script is:inline slot="head">
+    document.documentElement.setAttribute('data-page', 'home')
+  </script>
   <section class="intro-grid">
     <div class="intro-left">
       <h3 class="intro-name">Xinger Yao</h3>
@@ -33,27 +37,35 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
       </div>
     </figure>
   </section>
+
   <section class="flex flex-col gap-y-4">
-    <h2 class="text-2xl font-medium">Latest posts</h2>
-    <ul class="flex flex-col gap-y-4">
-      {
-        blog.map((post) => (
-          <li>
-            <BlogCard entry={post} />
-          </li>
-        ))
-      }
-    </ul>
-    <div class="flex justify-center">
-      <Link
-        href="/blog"
-        class={buttonVariants({ variant: 'ghost' }) + ' group'}
-      >
-        See all posts <span
-          class="ml-1.5 transition-transform group-hover:translate-x-1"
-          >&rarr;</span
-        >
-      </Link>
+    <div class="music-heading">
+      <h3 class="music-title">My Favorite NetEase Cloud Music</h3>
     </div>
+    <APlayer />
+
+    <section class="flex flex-col gap-y-4">
+      <h2 class="text-2xl font-medium">Latest posts</h2>
+      <ul class="flex flex-col gap-y-4">
+        {
+          blog.map((post) => (
+            <li>
+              <BlogCard entry={post} />
+            </li>
+          ))
+        }
+      </ul>
+      <div class="flex justify-center">
+        <Link
+          href="/blog"
+          class={buttonVariants({ variant: 'ghost' }) + ' group'}
+        >
+          See all posts <span
+            class="ml-1.5 transition-transform group-hover:translate-x-1"
+            >&rarr;</span
+          >
+        </Link>
+      </div>
+    </section>
   </section>
 </Layout>
