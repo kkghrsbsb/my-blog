@@ -59,7 +59,7 @@ export default function APlayerClient({
           audio: state.audio || [],
           lrcType: 3,
           listFolded: true,
-          listMaxHeight: '240px',
+          listMaxHeight: 'calc(var(--aplayer-row-h, 2.2em) * 4)',
         })
         state.instance = player
         state.key = cacheKey

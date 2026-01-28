@@ -1,0 +1,130 @@
+---
+---
+
+<style is:global>
+  .intro-grid {
+    position: relative;
+    padding: 2.5rem 1.5rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    overflow: hidden;
+  }
+
+  @media (min-width: 860px) {
+    .intro-grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+    }
+  }
+
+  .intro-left {
+    position: relative;
+    z-index: 1;
+  }
+
+  .intro-name {
+    margin: 0;
+    font-size: 2.1rem;
+    font-weight: 500;
+    line-height: 1.05;
+    color: var(--foreground);
+    letter-spacing: -0.01em;
+  }
+
+  .intro-id {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+  }
+
+  .intro-quote {
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    color: var(--muted-foreground);
+    max-width: 34ch;
+  }
+
+  .frame {
+    margin: 0;
+    justify-self: start;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 860px) {
+    .frame {
+      justify-self: end;
+    }
+  }
+
+  .frame-paper {
+    position: relative;
+    width: min(460px, 100%);
+    padding: 16px 16px 52px;
+    background: color-mix(in oklab, var(--background) 97%, var(--foreground) 3%);
+    border-radius: 0;
+    box-shadow:
+      0 14px 30px color-mix(in oklab, var(--foreground) 10%, transparent),
+      0 2px 6px color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+
+  .frame-paper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--foreground) 4%, transparent),
+      transparent 45%
+    );
+    opacity: 0.22;
+  }
+
+  .frame-paper:hover {
+    filter: none;
+  }
+
+  .frame-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: color-mix(in oklab, var(--background) 85%, var(--foreground) 15%);
+  }
+
+  .frame-cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted-foreground);
+    font-style: italic;
+    letter-spacing: 0.03em;
+    user-select: none;
+  }
+
+  .music-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .music-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    letter-spacing: 0.01em;
+  }
+
+  .music-subtitle {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--muted-foreground);
+    opacity: 0.8;
+  }
+</style>
