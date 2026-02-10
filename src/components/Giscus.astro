@@ -1,0 +1,130 @@
+<section class="mt-8" aria-label="Comments">
+  <div id="giscus-container"></div>
+</section>
+
+<script is:inline data-astro-rerun>
+  ;(() => {
+    const GISCUS_SCRIPT_ID = 'giscus-script'
+    const GISCUS_CONTAINER_ID = 'giscus-container'
+    const GISCUS_ORIGIN = 'https://giscus.app'
+    const LIGHT_THEME = 'light_protanopia'
+    const DARK_THEME = 'dark_protanopia'
+
+    const state = (window.__giscusState = window.__giscusState || {})
+
+    function getSiteTheme() {
+      const rootTheme = document.documentElement.getAttribute('data-theme')
+      if (rootTheme === 'dark' || rootTheme === 'light') return rootTheme
+
+      const storedTheme = localStorage.getItem('theme')
+      if (storedTheme === 'dark' || storedTheme === 'light') return storedTheme
+
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+    }
+
+    function getGiscusTheme() {
+      return getSiteTheme() === 'dark' ? DARK_THEME : LIGHT_THEME
+    }
+
+    function postTheme(theme) {
+      const frame = document.querySelector('iframe.giscus-frame')
+      if (!frame || !frame.contentWindow) return false
+
+      frame.contentWindow.postMessage(
+        { giscus: { setConfig: { theme } } },
+        GISCUS_ORIGIN,
+      )
+      return true
+    }
+
+    function postThemeWithRetry(theme, retries = 10) {
+      if (postTheme(theme) || retries <= 0) return
+      window.setTimeout(() => postThemeWithRetry(theme, retries - 1), 120)
+    }
+
+    function syncTheme() {
+      const theme = getGiscusTheme()
+      const script = document.getElementById(GISCUS_SCRIPT_ID)
+      if (script) {
+        script.setAttribute('data-theme', theme)
+      }
+      postThemeWithRetry(theme)
+    }
+
+    function ensureGiscusScript() {
+      const container = document.getElementById(GISCUS_CONTAINER_ID)
+      if (!container) return
+
+      const theme = getGiscusTheme()
+      const existingScript = document.getElementById(GISCUS_SCRIPT_ID)
+      const existingFrame = document.querySelector('iframe.giscus-frame')
+
+      if (existingScript || existingFrame) {
+        if (existingScript) {
+          existingScript.setAttribute('data-theme', theme)
+        }
+        postThemeWithRetry(theme)
+        return
+      }
+
+      const script = document.createElement('script')
+      script.id = GISCUS_SCRIPT_ID
+      script.src = 'https://giscus.app/client.js'
+      script.async = true
+      script.crossOrigin = 'anonymous'
+      script.setAttribute('data-repo', 'PKUFlyingPig/cs-self-learning')
+      script.setAttribute('data-repo-id', 'R_kgDOGP67ng')
+      script.setAttribute('data-category', 'Announcements')
+      script.setAttribute('data-category-id', 'DIC_kwDOGP67ns4COM9Q')
+      // Change to "title" if you want thread mapping to follow post title.
+      script.setAttribute('data-mapping', 'pathname')
+      script.setAttribute('data-reactions-enabled', '1')
+      script.setAttribute('data-emit-metadata', '0')
+      script.setAttribute('data-input-position', 'top')
+      script.setAttribute('data-theme', theme)
+      script.setAttribute('data-lang', 'zh-CN')
+      script.setAttribute('data-loading', 'lazy')
+
+      container.appendChild(script)
+    }
+
+    function initGiscus() {
+      ensureGiscusScript()
+      syncTheme()
+    }
+
+    function bindEventsOnce() {
+      if (state.eventsBound) return
+      document.addEventListener('astro:page-load', initGiscus)
+      document.addEventListener('astro:after-swap', initGiscus)
+      state.eventsBound = true
+    }
+
+    function observeThemeOnce() {
+      if (state.themeObserver) return
+
+      state.themeObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (
+            mutation.type === 'attributes' &&
+            mutation.attributeName === 'data-theme'
+          ) {
+            syncTheme()
+            break
+          }
+        }
+      })
+
+      state.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      })
+    }
+
+    bindEventsOnce()
+    observeThemeOnce()
+    initGiscus()
+  })()
+</script>

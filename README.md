@@ -2,13 +2,14 @@
 
 Personal blog built with Astro.
 
-This project is based on an existing Astro blog template and extended with a music player, theme system refinements, and UI/UX customizations.
+This project is based on an existing Astro blog template and extended with a music player, a comments system and UI/UX customizations.
 
 ## Stack
 
 - Framework: Astro
 - Music Player: APlayer
 - Playlist API: Meting API (NetEase Cloud Music)
+- Comments System: giscus (Github Discussions)
 
 ## Base Template
 
@@ -55,3 +56,16 @@ Music data is provided by **Meting API**:
 - https://github.com/injahow/meting-api
 
 Used only as an external API service to fetch NetEase Cloud Music playlists.
+
+## Giscus
+
+A comments system powered by [GitHub Discussions][discussions]. Let visitors leave comments and reactions on your website via GitHub! Heavily inspired by [utterances][utterances].
+
+- [Open source][repo]. 🌏
+- No tracking, no ads, always free. 📡 🚫
+- No database needed. All data is stored in GitHub Discussions. :octocat:
+- Supports [custom themes][creating-custom-themes]! 🌗
+- Supports [multiple languages][multiple-languages]. 🌐
+- [Extensively configurable][advanced-usage]. 🔧
+- Automatically fetches new comments and edits from GitHub. 🔃
+- [Can be self-hosted][self-hosting]! 🤳
