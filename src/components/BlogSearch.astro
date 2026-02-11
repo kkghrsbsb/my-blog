@@ -1,0 +1,311 @@
+---
+interface SearchPostItem {
+  id: string
+  title: string
+  description: string
+  tags: string[]
+  date: string
+  url: string
+}
+
+interface Props {
+  posts: SearchPostItem[]
+}
+
+const { posts } = Astro.props
+---
+
+<section class="relative z-20" data-blog-search>
+  <div
+    class="bg-background/45 pointer-events-none fixed inset-0 z-10 hidden opacity-0 backdrop-blur-sm transition-opacity duration-200"
+    data-blog-search-backdrop
+    aria-hidden="true"
+  >
+  </div>
+
+  <div
+    class="bg-card relative z-20 rounded-xl border p-4 sm:p-5"
+    data-blog-search-panel
+  >
+    <div class="mb-3 flex items-center justify-between gap-3">
+      <h2 class="text-sm font-medium">Search Articles</h2>
+      <span class="text-muted-foreground text-xs">{posts.length} posts</span>
+    </div>
+
+    <label class="sr-only" for="blog-search-input">Search blog posts</label>
+    <input
+      id="blog-search-input"
+      type="search"
+      placeholder="Search by title, description, tag..."
+      class="bg-background focus:ring-primary/30 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2"
+      data-blog-search-input
+      autocomplete="off"
+    />
+
+    <p
+      class="text-muted-foreground mt-2 min-h-4 text-xs"
+      data-blog-search-status
+    >
+      Start typing to search posts.
+    </p>
+
+    <ul
+      class="bg-background absolute inset-x-0 top-full z-30 -mt-px hidden max-h-96 overflow-y-auto rounded-t-none rounded-b-xl border border-t-0 p-2 shadow-lg"
+      data-blog-search-results
+    >
+    </ul>
+    <script
+      type="application/json"
+      data-blog-search-data
+      set:html={JSON.stringify(posts)}
+    />
+  </div>
+</section>
+
+<script>
+  import { Index } from 'flexsearch'
+
+  type SearchPostItem = {
+    id: string
+    title: string
+    description: string
+    tags: string[]
+    date: string
+    url: string
+  }
+
+  const SEARCH_DEBOUNCE = 150
+  const SEARCH_LIMIT = 30
+
+  function escapeHtml(text: string): string {
+    return text
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;')
+  }
+
+  function scoreResult(post: SearchPostItem, queryLower: string): number {
+    let score = 0
+    const title = post.title.toLowerCase()
+    const description = (post.description || '').toLowerCase()
+    const tags = (post.tags || []).join(' ').toLowerCase()
+
+    if (title === queryLower) score += 100
+    else if (title.startsWith(queryLower)) score += 50
+    else if (title.includes(queryLower)) score += 30
+
+    const words = queryLower.split(/\s+/).filter(Boolean)
+    for (const word of words) {
+      if (title.includes(word)) score += 10
+      if (description.includes(word)) score += 5
+      if (tags.includes(word)) score += 15
+    }
+
+    return score
+  }
+
+  function initBlogSearch() {
+    const root = document.querySelector<HTMLElement>('[data-blog-search]')
+    if (!root || root.dataset.initialized === 'true') return
+
+    root.dataset.initialized = 'true'
+
+    const input = root.querySelector<HTMLInputElement>(
+      '[data-blog-search-input]',
+    )
+    const results = root.querySelector<HTMLUListElement>(
+      '[data-blog-search-results]',
+    )
+    const status = root.querySelector<HTMLElement>('[data-blog-search-status]')
+    const panel = root.querySelector<HTMLElement>('[data-blog-search-panel]')
+    const backdrop = root.querySelector<HTMLElement>(
+      '[data-blog-search-backdrop]',
+    )
+    const dataScript = root.querySelector<HTMLScriptElement>(
+      '[data-blog-search-data]',
+    )
+    if (
+      !input ||
+      !results ||
+      !status ||
+      !panel ||
+      !dataScript?.textContent ||
+      !backdrop
+    )
+      return
+
+    let posts: SearchPostItem[] = []
+    try {
+      posts = JSON.parse(dataScript.textContent) as SearchPostItem[]
+    } catch {
+      status.textContent = 'Search index failed to load.'
+      return
+    }
+
+    const index = new Index({ tokenize: 'forward' })
+    posts.forEach((post, idx) => {
+      const text = [
+        post.title || '',
+        post.description || '',
+        (post.tags || []).join(' '),
+      ]
+        .join(' ')
+        .toLowerCase()
+      index.add(idx, text)
+    })
+
+    let debounceId: number | undefined
+    let pointerDownInsidePanel = false
+    const setBackdropVisible = (visible: boolean) => {
+      root.classList.toggle('z-40', visible)
+      root.classList.toggle('z-20', !visible)
+      backdrop.classList.toggle('hidden', !visible)
+      backdrop.classList.toggle('pointer-events-none', !visible)
+      backdrop.classList.toggle('pointer-events-auto', visible)
+      requestAnimationFrame(() => {
+        backdrop.classList.toggle('opacity-0', !visible)
+        backdrop.classList.toggle('opacity-100', visible)
+      })
+    }
+    const cancelSearch = () => {
+      if (debounceId) window.clearTimeout(debounceId)
+      input.value = ''
+      render([], '')
+      setBackdropVisible(false)
+    }
+
+    const render = (items: SearchPostItem[], query: string) => {
+      if (!query.trim()) {
+        results.classList.add('hidden')
+        panel.classList.remove('rounded-b-none')
+        results.innerHTML = ''
+        status.textContent = 'Start typing to search posts.'
+        return
+      }
+
+      status.textContent =
+        items.length > 0
+          ? `${items.length} result(s)`
+          : `No results for "${query}".`
+      results.classList.remove('hidden')
+      panel.classList.add('rounded-b-none')
+
+      if (items.length === 0) {
+        results.innerHTML = ''
+        return
+      }
+
+      results.innerHTML = items
+        .map((post) => {
+          const safeTitle = escapeHtml(post.title)
+          const safeDesc = escapeHtml(post.description || '')
+          const safeDate = escapeHtml(post.date || '')
+          const safeTags = (post.tags || [])
+            .slice(0, 3)
+            .map(
+              (tag) =>
+                `<span class="text-muted-foreground text-[11px]">#${escapeHtml(tag)}</span>`,
+            )
+            .join(' ')
+
+          return `
+            <li>
+              <a href="${post.url}" class="group block rounded-xl border border-border/70 bg-card p-3 transition-colors duration-300 ease-out hover:bg-[var(--blog-hover)]">
+                <p class="text-sm font-medium transition-colors duration-300 group-hover:text-[var(--muted-opposite)]">${safeTitle}</p>
+                ${safeDesc ? `<p class="text-muted-foreground mt-1 line-clamp-2 text-xs">${safeDesc}</p>` : ''}
+                <p class="text-muted-foreground mt-2 text-[11px]">${safeDate}</p>
+                ${safeTags ? `<div class="mt-1 flex flex-wrap gap-2">${safeTags}</div>` : ''}
+              </a>
+            </li>
+          `
+        })
+        .join('')
+    }
+
+    input.addEventListener('input', () => {
+      if (debounceId) window.clearTimeout(debounceId)
+      debounceId = window.setTimeout(() => {
+        const query = input.value.trim()
+        if (!query) {
+          render([], '')
+          return
+        }
+
+        const normalizedQuery = query.toLowerCase()
+        let searchResults = index.search(normalizedQuery, {
+          limit: SEARCH_LIMIT,
+        }) as Array<number | string>
+
+        if (searchResults.length === 0 && normalizedQuery.length > 2) {
+          const wordResults = new Set<number>()
+          const words = normalizedQuery.split(/\s+/)
+          words.forEach((word) => {
+            if (word.length <= 2) return
+            const wordSearch = index.search(word, { limit: 20 }) as Array<
+              number | string
+            >
+            wordSearch.forEach((idx) => wordResults.add(Number(idx)))
+          })
+          searchResults = Array.from(wordResults)
+        }
+
+        const matched = searchResults
+          .map((idx) => posts[Number(idx)])
+          .filter(Boolean)
+          .map((post) => ({ post, score: scoreResult(post, normalizedQuery) }))
+          .sort((a, b) => b.score - a.score)
+          .map((item) => item.post)
+
+        render(matched, query)
+      }, SEARCH_DEBOUNCE)
+    })
+
+    input.addEventListener('focus', () => {
+      setBackdropVisible(true)
+    })
+
+    input.addEventListener('blur', () => {
+      window.setTimeout(() => {
+        if (pointerDownInsidePanel) {
+          pointerDownInsidePanel = false
+          return
+        }
+        const active = document.activeElement as Node | null
+        if (active && panel.contains(active)) return
+        cancelSearch()
+      }, 0)
+    })
+
+    backdrop.addEventListener('click', () => {
+      cancelSearch()
+      input.blur()
+    })
+
+    document.addEventListener('pointerdown', (event) => {
+      const target = event.target as Node | null
+      if (!target) return
+      pointerDownInsidePanel = panel.contains(target)
+      if (pointerDownInsidePanel) return
+      cancelSearch()
+      input.blur()
+    })
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return
+      if (!root.contains(document.activeElement)) return
+      cancelSearch()
+      input.blur()
+    })
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBlogSearch, {
+      once: true,
+    })
+  } else {
+    initBlogSearch()
+  }
+  document.addEventListener('astro:page-load', initBlogSearch)
+</script>

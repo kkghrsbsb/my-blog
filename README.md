@@ -61,6 +61,9 @@ Used only as an external API service to fetch NetEase Cloud Music playlists.
 
 A comments system powered by [GitHub Discussions][discussions]. Let visitors leave comments and reactions on your website via GitHub! Heavily inspired by [utterances][utterances].
 
+- https://github.com/giscus/giscus
+
+Features:
 - [Open source][repo]. 🌏
 - No tracking, no ads, always free. 📡 🚫
 - No database needed. All data is stored in GitHub Discussions. :octocat:
@@ -69,3 +72,20 @@ A comments system powered by [GitHub Discussions][discussions]. Let visitors lea
 - [Extensively configurable][advanced-usage]. 🔧
 - Automatically fetches new comments and edits from GitHub. 🔃
 - [Can be self-hosted][self-hosting]! 🤳
+
+[giscus]: https://giscus.app
+[discussions]: https://docs.github.com/en/discussions
+[utterances]: https://github.com/utterance/utterances
+[repo]: https://github.com/giscus/giscus
+[advanced-usage]: https://github.com/giscus/giscus/blob/main/ADVANCED-USAGE.md
+[creating-custom-themes]: https://github.com/giscus/giscus/blob/main/ADVANCED-USAGE.md#data-theme
+[multiple-languages]: https://github.com/giscus/giscus/blob/main/CONTRIBUTING.md#adding-localizations
+[self-hosting]: https://github.com/giscus/giscus/blob/main/SELF-HOSTING.md
+
+## flexsearch
+
+Next-Generation full-text search library for Browser and Node.js
+
+- https://github.com/nextapps-de/flexsearch
+
+Create a search box embedded in blog/ page, allowing users to search for blog posts by title, tags, and description ...

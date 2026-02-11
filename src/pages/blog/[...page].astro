@@ -1,5 +1,6 @@
 ---
 import BlogCard from '@/components/BlogCard.astro'
+import BlogSearch from '@/components/BlogSearch.astro'
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import PageHead from '@/components/PageHead.astro'
 import PaginationComponent from '@/components/ui/pagination'
@@ -19,6 +20,16 @@ export async function getStaticPaths({
 
 const { page } = Astro.props
 
+const allPosts = await getAllPosts()
+const searchPosts = allPosts.map((post) => ({
+  id: post.id,
+  title: post.data.title,
+  description: post.data.description ?? '',
+  tags: post.data.tags ?? [],
+  date: post.data.date.toISOString().split('T')[0],
+  url: `/blog/${post.id}`,
+}))
+
 const postsByYear = groupPostsByYear(page.data)
 const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
 ---
@@ -33,6 +44,8 @@ const years = Object.keys(postsByYear).sort((a, b) => parseInt(b) - parseInt(a))
   />
 
   <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
+    <BlogSearch posts={searchPosts} />
+
     {
       years.map((year) => (
         <section class="flex flex-col gap-y-4">

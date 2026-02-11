@@ -31,82 +31,20 @@ import { Icon } from 'astro-icon/components'
 </script>
 
 <script>
-  function applyTheme(newTheme: any) {
-    const element = document.documentElement
-    element.setAttribute('data-theme', newTheme)
-    localStorage.setItem('theme', newTheme)
-  }
-
-  function getToggleOrigin(event: any) {
-    const target = event?.currentTarget
-    const rect = target?.getBoundingClientRect?.()
-    const fallbackX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2
-    const fallbackY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2
-
-    if ('clientX' in event && 'clientY' in event) {
-      const hasPointer = event.clientX !== 0 || event.clientY !== 0
-      if (hasPointer) {
-        return { x: event.clientX, y: event.clientY }
-      }
-    }
-
-    return { x: fallbackX, y: fallbackY }
-  }
-
-  function updatePageThemeFlag() {
-    const element = document.documentElement
-    const isHome = window.location.pathname === '/'
-    if (isHome) {
-      element.setAttribute('data-page', 'home')
-    } else if (element.getAttribute('data-page') === 'home') {
-      element.removeAttribute('data-page')
-    }
-  }
-
-  function handleToggleClick(event: any) {
+  function handleToggleClick() {
     const element = document.documentElement
     const currentTheme = element.getAttribute('data-theme')
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark'
-    const disableTransitionOnPage = element.getAttribute('data-page') === 'home'
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches
-    const supportsViewTransition =
-      typeof document.startViewTransition === 'function'
 
-    if (
-      !supportsViewTransition ||
-      prefersReducedMotion ||
-      disableTransitionOnPage
-    ) {
-      element.classList.add('[&_*]:transition-none')
-      applyTheme(newTheme)
-      window.getComputedStyle(element).getPropertyValue('opacity')
+    element.classList.add('[&_*]:transition-none')
+    element.setAttribute('data-theme', newTheme)
+    window.getComputedStyle(element).getPropertyValue('opacity')
 
-      requestAnimationFrame(() => {
-        element.classList.remove('[&_*]:transition-none')
-      })
-
-      return
-    }
-
-    const { x, y } = getToggleOrigin(event)
-    const maxX = Math.max(x, window.innerWidth - x)
-    const maxY = Math.max(y, window.innerHeight - y)
-    const radius = Math.hypot(maxX, maxY)
-
-    element.style.setProperty('--theme-toggle-x', `${x}px`)
-    element.style.setProperty('--theme-toggle-y', `${y}px`)
-    element.style.setProperty('--theme-toggle-radius', `${radius}px`)
-    element.setAttribute('data-theme-transition', 'circle')
-
-    const transition = document.startViewTransition(() => {
-      applyTheme(newTheme)
+    requestAnimationFrame(() => {
+      element.classList.remove('[&_*]:transition-none')
     })
 
-    transition.finished.finally(() => {
-      element.removeAttribute('data-theme-transition')
-    })
+    localStorage.setItem('theme', newTheme)
   }
 
   function initThemeToggle() {
@@ -115,15 +53,9 @@ import { Icon } from 'astro-icon/components'
       ?.addEventListener('click', handleToggleClick)
   }
 
-  updatePageThemeFlag()
   initThemeToggle()
 
-  document.addEventListener('astro:page-load', () => {
-    updatePageThemeFlag()
-  })
-
   document.addEventListener('astro:after-swap', () => {
-    updatePageThemeFlag()
     const storedTheme = localStorage.getItem('theme') || 'light'
     const element = document.documentElement
 
